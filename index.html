@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Security Crime Management System</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #1e3a8a;
+        --secondary-color: #3b82f6;
+        --accent-color: #ef4444;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+        --border-color: #e2e8f0;
+        --text-primary: #1f2937;
+        --text-secondary: #64748b;
+        --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: var(--text-primary);
+      }
+
+      /* Header */
+      .header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 3px solid var(--primary-color);
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-primary);
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .profile-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+      }
+
+      /* Main Container */
+      .container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+      }
+
+      /* Dashboard Stats */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .stat-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      /* Content Sections */
+      .content-section {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .content-section.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-success {
+        background: var(--success-color);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #059669;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background: var(--accent-color);
+        color: white;
+      }
+
+      .btn-warning {
+        background: var(--warning-color);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: var(--text-secondary);
+        color: white;
+      }
+
+      /* Forms */
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+      }
+
+      .form-control.search {
+        padding-left: 3rem;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>');
+        background-repeat: no-repeat;
+        background-position: 0.75rem center;
+        background-size: 1.25rem;
+        background-color: white;
+      }
+
+      /* Cards */
+      .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card-header {
+        padding: 1.5rem;
+        background: var(--light-color);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+
+      /* Tables */
+      .table-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .table th,
+      .table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .table th {
+        background: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+      }
+
+      .table tbody tr:hover {
+        background: rgba(30, 58, 138, 0.05);
+      }
+
+      /* Status Badges */
+      .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .badge-active {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+      }
+
+      .badge-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+      }
+
+      .badge-closed {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--accent-color);
+      }
+
+      .badge-high {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--accent-color);
+      }
+
+      .badge-medium {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+      }
+
+      .badge-low {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+      }
+
+      .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+      }
+
+      /* File Upload */
+      .file-upload {
+        border: 2px dashed var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .file-upload:hover {
+        border-color: var(--primary-color);
+        background: rgba(30, 58, 138, 0.05);
+      }
+
+      .file-upload.dragover {
+        border-color: var(--primary-color);
+        background: rgba(30, 58, 138, 0.1);
+        transform: scale(1.02);
+      }
+
+      /* Filters */
+      .filters {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      /* Timeline */
+      .timeline {
+        position: relative;
+        padding-left: 2rem;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 1rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--primary-color);
+      }
+
+      .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+
+      .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -1.75rem;
+        top: 1.5rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        border: 3px solid white;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .navbar {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .container {
+          padding: 0 1rem;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .filters {
+          grid-template-columns: 1fr;
+        }
+
+        .table-container {
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <nav class="navbar">
+        <div class="logo">
+          <i class="fas fa-shield-alt"></i>
+          <span>Security CMS</span>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <a
+              href="#dashboard"
+              class="nav-link active"
+              data-section="dashboard"
+            >
+              <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="#cases" class="nav-link" data-section="cases">
+              <i class="fas fa-folder-open"></i> Cases
+            </a>
+          </li>
+          <li>
+            <a href="#screening" class="nav-link" data-section="screening">
+              <i class="fas fa-user-shield"></i> Screening
+            </a>
+          </li>
+          <li>
+            <a href="#evidence" class="nav-link" data-section="evidence">
+              <i class="fas fa-camera"></i> Evidence
+            </a>
+          </li>
+          <li>
+            <a href="#reports" class="nav-link" data-section="reports">
+              <i class="fas fa-chart-bar"></i> Reports
+            </a>
+          </li>
+        </ul>
+        <div class="user-profile">
+          <span id="userName"></span>
+          <div class="profile-avatar" id="profileAvatar"></div>
+          <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="content-section active">
+        <div class="section-header">
+          <h1 class="section-title">
+            <i class="fas fa-tachometer-alt"></i>
+            Security Dashboard
+          </h1>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(239, 68, 68, 0.1);
+                color: var(--accent-color);
+              "
+            >
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-number" id="activeCases">0</div>
+            <div class="stat-label">Active Cases</div>
+            <div class="stat-trend">
+              <i class="fas fa-arrow-up" style="color: var(--accent-color)"></i>
+              <span style="color: var(--accent-color)">+0 this week</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(245, 158, 11, 0.1);
+                color: var(--warning-color);
+              "
+            >
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="stat-number" id="screenings">0</div>
+            <div class="stat-label">Security Screenings</div>
+            <div class="stat-trend">
+              <i
+                class="fas fa-arrow-up"
+                style="color: var(--success-color)"
+              ></i>
+              <span style="color: var(--success-color)">+0 today</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(16, 185, 129, 0.1);
+                color: var(--success-color);
+              "
+            >
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-number" id="resolved">0</div>
+            <div class="stat-label">Resolved Cases</div>
+            <div class="stat-trend">
+              <i
+                class="fas fa-arrow-up"
+                style="color: var(--success-color)"
+              ></i>
+              <span style="color: var(--success-color)">+0 this month</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(30, 58, 138, 0.1);
+                color: var(--primary-color);
+              "
+            >
+              <i class="fas fa-camera"></i>
+            </div>
+            <div class="stat-number" id="evidence">0</div>
+            <div class="stat-label">Evidence Files</div>
+            <div class="stat-trend">
+              <i
+                class="fas fa-arrow-up"
+                style="color: var(--primary-color)"
+              ></i>
+              <span style="color: var(--primary-color)">+0 this week</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+            <button class="btn btn-primary" onclick="loadRecentActivity()">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="timeline" id="recentActivity">
+              <!-- Activity items will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cases Section -->
+      <section id="cases" class="content-section">
+        <div class="section-header">
+          <h1 class="section-title">
+            <i class="fas fa-folder-open"></i>
+            Crime Cases Management
+          </h1>
+          <button class="btn btn-primary" onclick="openModal('newCaseModal')">
+            <i class="fas fa-plus"></i> New Case
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control search"
+              placeholder="Search cases..."
+              id="caseSearch"
+            />
+          </div>
+          <div class="form-group">
+            <select class="form-control" id="statusFilter">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <select class="form-control" id="priorityFilter">
+              <option value="">All Priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="date" class="form-control" id="dateFilter" />
+          </div>
+        </div>
+
+        <!-- Cases Table -->
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="casesTableBody">
+              <!-- Cases will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Security Screening Section -->
+      <section id="screening" class="content-section">
+        <div class="section-header">
+          <h1 class="section-title">
+            <i class="fas fa-user-shield"></i>
+            Security Screening
+          </h1>
+          <button
+            class="btn btn-primary"
+            onclick="openModal('newScreeningModal')"
+          >
+            <i class="fas fa-plus"></i> New Screening
+          </button>
+        </div>
+
+        <!-- Screening Stats -->
+        <div
+          class="stats-grid"
+          style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"
+        >
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(16, 185, 129, 0.1);
+                color: var(--success-color);
+              "
+            >
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Cleared</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(245, 158, 11, 0.1);
+                color: var(--warning-color);
+              "
+            >
+              <i class="fas fa-user-clock"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(239, 68, 68, 0.1);
+                color: var(--accent-color);
+              "
+            >
+              <i class="fas fa-user-times"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Flagged</div>
+          </div>
+        </div>
+
+        <!-- Screening List -->
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Screened By</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="screeningTableBody">
+              <!-- Screening records will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Evidence Section -->
+      <section id="evidence" class="content-section">
+        <div class="section-header">
+          <h1 class="section-title">
+            <i class="fas fa-camera"></i>
+            Evidence Management
+          </h1>
+          <button
+            class="btn btn-primary"
+            onclick="openModal('uploadEvidenceModal')"
+          >
+            <i class="fas fa-upload"></i> Upload Evidence
+          </button>
+        </div>
+
+        <!-- Evidence Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(30, 58, 138, 0.1);
+                color: var(--primary-color);
+              "
+            >
+              <i class="fas fa-image"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Photos</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(16, 185, 129, 0.1);
+                color: var(--success-color);
+              "
+            >
+              <i class="fas fa-video"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Videos</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(245, 158, 11, 0.1);
+                color: var(--warning-color);
+              "
+            >
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Documents</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="
+                background: rgba(239, 68, 68, 0.1);
+                color: var(--accent-color);
+              "
+            >
+              <i class="fas fa-microphone"></i>
+            </div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Audio Files</div>
+          </div>
+        </div>
+
+        <!-- Evidence List -->
+        <div id="evidenceGrid" class="form-grid">
+          <!-- Evidence items will be populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- Reports Section -->
+      <section id="reports" class="content-section">
+        <div class="section-header">
+          <h1 class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            Reports & Analytics
+          </h1>
+          <button class="btn btn-primary" onclick="generateReport()">
+            <i class="fas fa-file-pdf"></i> Generate Report
+          </button>
+        </div>
+
+        <!-- Report Cards -->
+        <div class="form-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Case Statistics</h3>
+            </div>
+            <div class="card-body">
+              <canvas id="caseChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Monthly Trends</h3>
+            </div>
+            <div class="card-body">
+              <canvas id="trendChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Modals -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('loginModal')">
+          &times;
+        </button>
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" name="username" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="openModal('signupModal'); closeModal('loginModal')"
+          >
+            Sign Up
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('signupModal')">
+          &times;
+        </button>
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" name="username" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="openModal('loginModal'); closeModal('signupModal')"
+          >
+            Back to Login
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('apiKeyModal')">
+          &times;
+        </button>
+        <h2>Set Groq API Key</h2>
+        <form id="apiKeyForm">
+          <div class="form-group">
+            <label class="form-label">API Key</label>
+            <input type="text" class="form-control" name="api_key" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Set</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- New Case Modal -->
+    <div id="newCaseModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('newCaseModal')">
+          &times;
+        </button>
+        <h2>Create New Case</h2>
+        <form id="newCaseForm">
+          <div class="form-group">
+            <label class="form-label">Case Title</label>
+            <input type="text" class="form-control" name="title" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Case Type</label>
+            <select class="form-control" name="type" required>
+              <option value="">Select Type</option>
+              <option value="theft">Theft</option>
+              <option value="assault">Assault</option>
+              <option value="fraud">Fraud</option>
+              <option value="vandalism">Vandalism</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select class="form-control" name="priority" required>
+              <option value="">Select Priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status" required>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assigned To</label>
+            <input
+              type="text"
+              class="form-control"
+              name="assigned_to"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="date" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              name="description"
+              rows="4"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Create Case</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- New Screening Modal -->
+    <div id="newScreeningModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('newScreeningModal')">
+          &times;
+        </button>
+        <h2>New Security Screening</h2>
+        <form id="newScreeningForm">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-control" name="type" required>
+              <option value="background">Background Check</option>
+              <option value="security">Security Clearance</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Level</label>
+            <select class="form-control" name="level" required>
+              <option value="basic">Basic</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status" required>
+              <option value="cleared">Cleared</option>
+              <option value="pending">Pending</option>
+              <option value="flagged">Flagged</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Screened By</label>
+            <input
+              type="text"
+              class="form-control"
+              name="screened_by"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="date" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-control" name="notes" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            Create Screening
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Upload Evidence Modal -->
+    <div id="uploadEvidenceModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('uploadEvidenceModal')">
+          &times;
+        </button>
+        <h2>Upload Evidence</h2>
+        <form id="uploadEvidenceForm">
+          <div class="form-group">
+            <label class="form-label">Case ID</label>
+            <input type="text" class="form-control" name="case_id" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              name="description"
+              rows="4"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">File</label>
+            <input type="file" name="file" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Modal functions
+      function openModal(id) {
+        document.getElementById(id).classList.add("active");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("active");
+      }
+
+      // Navigation
+      const navLinks = document.querySelectorAll(".nav-link");
+      const sections = document.querySelectorAll(".content-section");
+      navLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          navLinks.forEach((l) => l.classList.remove("active"));
+          link.classList.add("active");
+          sections.forEach((s) => s.classList.remove("active"));
+          const section = document.getElementById(link.dataset.section);
+          section.classList.add("active");
+          if (link.dataset.section === "dashboard") loadDashboard();
+          if (link.dataset.section === "cases") loadCases();
+          if (link.dataset.section === "screening") loadScreenings();
+          if (link.dataset.section === "evidence") loadEvidence();
+          if (link.dataset.section === "reports") loadReports();
+        });
+      });
+
+      // Load functions
+      function loadDashboard() {
+        fetch("/api/stats")
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("activeCases").textContent =
+              data.activeCases;
+            document.getElementById("screenings").textContent = data.screenings;
+            document.getElementById("resolved").textContent = data.resolved;
+            document.getElementById("evidence").textContent = data.evidence;
+          });
+        loadRecentActivity();
+      }
+
+      function loadRecentActivity() {
+        fetch("/api/recent_activity")
+          .then((res) => res.json())
+          .then((activity) => {
+            const timeline = document.getElementById("recentActivity");
+            timeline.innerHTML = activity
+              .map(
+                (item) => `
+                        <div class="timeline-item">
+                            <h3>${item.action}</h3>
+                            <p>${item.details}</p>
+                            <span>${item.date}</span>
+                        </div>
+                    `
+              )
+              .join("");
+          });
+      }
+
+      function loadCases() {
+        const params = new URLSearchParams();
+        const search = document.getElementById("caseSearch").value;
+        const status = document.getElementById("statusFilter").value;
+        const priority = document.getElementById("priorityFilter").value;
+        const date = document.getElementById("dateFilter").value;
+        if (search) params.append("search", search);
+        if (status) params.append("status", status);
+        if (priority) params.append("priority", priority);
+        if (date) params.append("date", date);
+        fetch(`/api/cases?${params.toString()}`)
+          .then((res) => res.json())
+          .then((cases) => {
+            const tbody = document.getElementById("casesTableBody");
+            tbody.innerHTML = cases
+              .map(
+                (c) => `
+                        <tr>
+                            <td>${c.id}</td>
+                            <td>${c.title}</td>
+                            <td>${c.type}</td>
+                            <td><span class="badge badge-${c.priority}">${c.priority}</span></td>
+                            <td><span class="badge badge-${c.status}">${c.status}</span></td>
+                            <td>${c.assigned_to}</td>
+                            <td>${c.date}</td>
+                            <td><button class="btn btn-secondary">View</button></td>
+                        </tr>
+                    `
+              )
+              .join("");
+          });
+      }
+
+      function loadScreenings() {
+        fetch("/api/screenings")
+          .then((res) => res.json())
+          .then((screenings) => {
+            const tbody = document.getElementById("screeningTableBody");
+            tbody.innerHTML = screenings
+              .map(
+                (s) => `
+                        <tr>
+                            <td>${s.id}</td>
+                            <td>${s.name}</td>
+                            <td>${s.type}</td>
+                            <td>${s.level}</td>
+                            <td><span class="badge badge-${s.status}">${s.status}</span></td>
+                            <td>${s.screened_by}</td>
+                            <td>${s.date}</td>
+                            <td><button class="btn btn-secondary">View</button></td>
+                        </tr>
+                    `
+              )
+              .join("");
+          });
+      }
+
+      function loadEvidence() {
+        fetch("/api/evidence")
+          .then((res) => res.json())
+          .then((evidence) => {
+            const grid = document.getElementById("evidenceGrid");
+            grid.innerHTML = evidence
+              .map(
+                (e) => `
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">${e.filename}</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Type: ${e.type}</p>
+                                <p>Case ID: ${e.case_id}</p>
+                                <p>${e.description}</p>
+                                <a href="/uploads/${e.filename}" target="_blank" class="btn btn-secondary">View</a>
+                            </div>
+                        </div>
+                    `
+              )
+              .join("");
+          });
+      }
+
+      function loadReports() {
+        fetch("/api/case_stats")
+          .then((res) => res.json())
+          .then((data) => {
+            new Chart(document.getElementById("caseChart"), {
+              type: "doughnut",
+              data: {
+                labels: data.labels,
+                datasets: [
+                  {
+                    data: data.values,
+                    backgroundColor: [
+                      "#1e3a8a",
+                      "#3b82f6",
+                      "#ef4444",
+                      "#10b981",
+                      "#f59e0b",
+                    ],
+                  },
+                ],
+              },
+            });
+          });
+        fetch("/api/monthly_trends")
+          .then((res) => res.json())
+          .then((data) => {
+            new Chart(document.getElementById("trendChart"), {
+              type: "bar",
+              data: {
+                labels: data.months,
+                datasets: [
+                  {
+                    label: "Cases",
+                    data: data.counts,
+                    backgroundColor: "#1e3a8a",
+                  },
+                ],
+              },
+            });
+          });
+      }
+
+      // Form submissions
+      document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((resp) => {
+            if (resp.status === "success") {
+              closeModal("loginModal");
+              checkApiKey();
+            } else {
+              alert(resp.error);
+            }
+          });
+      });
+
+      document.getElementById("signupForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        fetch("/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((resp) => {
+            if (resp.status === "success") {
+              closeModal("signupModal");
+              checkApiKey();
+            } else {
+              alert(resp.error);
+            }
+          });
+      });
+
+      document.getElementById("apiKeyForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        fetch("/set_api_key", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((resp) => {
+            if (resp.status === "success") {
+              closeModal("apiKeyModal");
+              loadDashboard();
+            } else {
+              alert(resp.error);
+            }
+          });
+      });
+
+      document.getElementById("newCaseForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        fetch("/api/add_case", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((resp) => {
+            if (resp.status === "success") {
+              closeModal("newCaseModal");
+              loadCases();
+            } else {
+              alert(resp.error);
+            }
+          });
+      });
+
+      document
+        .getElementById("newScreeningForm")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData);
+          fetch("/api/add_screening", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+            .then((res) => res.json())
+            .then((resp) => {
+              if (resp.status === "success") {
+                closeModal("newScreeningModal");
+                loadScreenings();
+              } else {
+                alert(resp.error);
+              }
+            });
+        });
+
+      document
+        .getElementById("uploadEvidenceForm")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          fetch("/api/upload_evidence", {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.json())
+            .then((resp) => {
+              if (resp.status === "success") {
+                closeModal("uploadEvidenceModal");
+                loadEvidence();
+              } else {
+                alert(resp.error);
+              }
+            });
+        });
+
+      // Filter listeners
+      document
+        .getElementById("caseSearch")
+        .addEventListener("input", loadCases);
+      document
+        .getElementById("statusFilter")
+        .addEventListener("change", loadCases);
+      document
+        .getElementById("priorityFilter")
+        .addEventListener("change", loadCases);
+      document
+        .getElementById("dateFilter")
+        .addEventListener("change", loadCases);
+
+      // Logout
+      function logout() {
+        fetch("/logout")
+          .then((res) => res.json())
+          .then(() => {
+            openModal("loginModal");
+            document.getElementById("userName").textContent = "";
+            document.getElementById("profileAvatar").textContent = "";
+          });
+      }
+
+      // Generate report
+      function generateReport() {
+        alert(
+          "Report generated! (Placeholder - implement PDF generation as needed)"
+        );
+      }
+
+      // Initial check
+      window.addEventListener("load", () => {
+        fetch("/check_login")
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.logged_in) {
+              openModal("loginModal");
+            } else {
+              document.getElementById("userName").textContent = data.username;
+              document.getElementById("profileAvatar").textContent =
+                data.username ? data.username[0].toUpperCase() : "";
+              checkApiKey();
+            }
+          });
+      });
+
+      function checkApiKey() {
+        fetch("/check_api_key")
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.set) {
+              openModal("apiKeyModal");
+            } else {
+              loadDashboard();
+            }
+          });
+      }
+    </script>
+  </body>
+</html>
